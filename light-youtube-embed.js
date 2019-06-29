@@ -6,21 +6,31 @@
 
  // DOM is ready
  document.addEventListener("DOMContentLoaded", function() {
- 	//Target all the elements with youtube class
- 	let iframes = document.getElementsByClassName('youtube');
+ 	//Target all the elements with youtube class\
+ 	//@TODO: Use a parameter for the class selector
+ 	let iframes = document.querySelectorAll('.youtube');
  	//Check to make sure array is not empty
- 	console.log(iframes);
  	if(iframes.length > 0){
- 		for(let i=0; i<iframes.length; i++){
- 			console.log(iframes[i]);
- 			var currentEmbedURL = iframes[i].src;
- 			console.log(currentEmbedURL);
- 			console.log(extractYotubeEmbedID(currentEmbedURL));
+ 		let count = iframes.length;
+ 		for(let i=0; i<count; i++){
+ 			let currentIframe = iframes[i];
+ 			let videoId = extractYotubeEmbedID(currentIframe.src);
+ 			let videoWrap = document.createElement("DIV");
+ 			videoWrap.classList.add('light-youtube-embed');
+ 			//Generate the thumbnail - This is unreliable. 
+ 			//@TODO: Use Youtube API instead
+ 			let videoThumnail = document.createElement("IMG");
+ 			videoThumnail.src = 'https://i1.ytimg.com/vi/'+videoId+'/hqdefault.jpg';
+ 			videoWrap.appendChild(videoThumnail);
+ 			//Append the videoWrap to the page
+ 			currentIframe.parentNode.insertBefore(videoWrap,currentIframe);
+ 			//Remove the iframe
+ 			currentIframe.remove();
  		}
  	}
  });
 
- //Function to extract the Youtube embed ID
+ //Extracts the Youtube embed ID
  function extractYotubeEmbedID(youtubeEmbedURL){
  	let regexPattern = /^.*((v\/)|(\/u\/\w\/)|(embed\/))\??([^#\&\?]*).*/;
  	let matches = youtubeEmbedURL.match(regexPattern);
