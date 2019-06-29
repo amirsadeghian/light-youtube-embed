@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	//Target all the elements with youtube class\
 	//@TODO: Use a parameter for the class selector
 	let iframes = document.querySelectorAll('.youtube');
+	let player;
 	//Check to make sure array is not empty
 	if(iframes.length > 0){
 		let count = iframes.length;
@@ -25,11 +26,14 @@ document.addEventListener("DOMContentLoaded", function() {
 			videoWrap.onclick = function(){
 				let youtubeVideoId = this.getAttribute('video-id');
 				console.log(youtubeVideoId);
-				let player = new YT.Player('lyemb-player', {
+				player = new YT.Player('lyemb-player', {
 					height: '360',
 					width: '640',
 					videoId: youtubeVideoId,
-					autoplay: 1
+					events: {
+						'onReady': onLightYoutubeEmbedPlayerReady,
+						'onStateChange': onLightYoutubeEmbedPlayerStateChange
+					}
 				});
 				//Show the player
 				console.log(document.getElementsByClassName('lyemb-player-wrap')[0]);
@@ -54,6 +58,8 @@ document.addEventListener("DOMContentLoaded", function() {
 	document.addEventListener('click', function(e) {
 	    if (e.target.className === 'lyemb-player-close') {
 	        document.getElementsByClassName('lyemb-player-wrap')[0].style.display = 'none';
+	        //On close, remove the iframe and reset the content of lyemb-player-iframe-wrap
+	   		document.getElementsByClassName('lyemb-player-iframe-wrap')[0].innerHTML = '<div id="lyemb-player"></div>';
 	    } 
 	});
 });
@@ -69,7 +75,7 @@ function extractYotubeEmbedID(youtubeEmbedURL){
 function injectLightEmbedModal(){
 	let html = '<div class="lyemb-player-wrap">';
 	html += '<div class="lyemb-player-content">';
-	html += '<button type="button" class="lyemb-player-close">×</button>';
+	html += '<button type="button" class="lyemb-player-close">X</button>';
 	html += '<div class="lyemb-player-iframe-wrap">';
 	html += '<div id="lyemb-player"></div>';
 	html += '</div>';
@@ -95,7 +101,23 @@ function injectLightEmbedCSS(){
 	lightYoutubeCSS += '.lyemb-player-content{width:85%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-height:75vh;max-width:900px;}';
 	lightYoutubeCSS += '.lyemb-player-close{color:#ffffff;right:-5px;padding-right:5px;right:-30px;top:-30px;font-size:48px;text-align:right;width:100%;overflow:visible;cursor:pointer;background:00;border:0;-webkit-appearance:none;display:block;outline:none;padding:0;z-index:999999;-webkit-box-shadow:none;box-shadow:none;position:relative;line-height:0;}';
 	lightYoutubeCSS += '.lyemb-player-iframe-wrap{position:relative;padding-bottom:56.25%;height:0;}';
-	lightYoutubeCSS += '.lyemb-player-iframe-wrap iframe{position:absolute;top:0;left:0;width:100%!important;height:100%!important;}';
+	lightYoutubeCSS += '.lyemb-player-iframe-wrap iframe{position:absolute;top:0;left:0;width:100%!important;height:100%!important;max-width:none!important;}';
 	lightYoutubeCSS += '<style>';
 	document.querySelector('head').innerHTML += lightYoutubeCSS;
+}
+
+// Functions for play/stop of youtube iframe
+//Ref: https://developers.google.com/youtube/iframe_api_reference
+function onLightYoutubeEmbedPlayerReady(event) {
+	event.target.playVideo();
+}
+let done = false;
+function onLightYoutubeEmbedPlayerStateChange(event) {
+	if (event.data == YT.PlayerState.PLAYING && !done) {
+		setTimeout(stopLightYoutubeVideo, 6000);
+		done = true;
+	}
+}
+function stopLightYoutubeVideo() {
+	player.stopVideo();
 }
