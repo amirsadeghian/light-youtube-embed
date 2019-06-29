@@ -29,8 +29,11 @@ document.addEventListener("DOMContentLoaded", function() {
 					height: '360',
 					width: '640',
 					videoId: youtubeVideoId,
-					autoplay: 1,
+					autoplay: 1
 				});
+				//Show the player
+				console.log(document.getElementsByClassName('lyemb-player-wrap')[0]);
+				document.getElementsByClassName('lyemb-player-wrap')[0].style.display = 'block';
 			}
 			//Generate the thumbnail - This is unreliable. 
 			//@TODO: Use Youtube API instead
@@ -46,6 +49,13 @@ document.addEventListener("DOMContentLoaded", function() {
 			currentIframe.remove();
 		}
 	}
+
+	// Close button click listeners
+	document.addEventListener('click', function(e) {
+	    if (e.target.className === 'lyemb-player-close') {
+	        document.getElementsByClassName('lyemb-player-wrap')[0].style.display = 'none';
+	    } 
+	});
 });
 
 //Extracts the Youtube embed ID
@@ -81,8 +91,11 @@ function injectLightEmbedCSS(){
 	lightYoutubeCSS += '.light-youtube-embed{cursor:pointer;position:relative;display:inline-block;}';
 	lightYoutubeCSS += '.lyemb-pb{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:85px;opacity:0.69;transition:all350ms;fill:#414141;}';
 	lightYoutubeCSS += '.light-youtube-embed:hover .lyemb-pb{opacity:1;fill:#f80000}';
-	lightYoutubeCSS += '.lyemb-player-wrap{position:fixed;top:0;left:0;right:0;bottom:0;background-color:#0b0b0bcc;z-index:9999999;}';
+	lightYoutubeCSS += '.lyemb-player-wrap{position:fixed;top:0;left:0;right:0;bottom:0;background-color:#0b0b0bcc;z-index:9999999;display:none;}';
 	lightYoutubeCSS += '.lyemb-player-content{width:85%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-height:75vh;max-width:900px;}';
+	lightYoutubeCSS += '.lyemb-player-close{color:#ffffff;right:-5px;padding-right:5px;right:-30px;top:-30px;font-size:48px;text-align:right;width:100%;overflow:visible;cursor:pointer;background:00;border:0;-webkit-appearance:none;display:block;outline:none;padding:0;z-index:999999;-webkit-box-shadow:none;box-shadow:none;position:relative;line-height:0;}';
+	lightYoutubeCSS += '.lyemb-player-iframe-wrap{position:relative;padding-bottom:56.25%;height:0;}';
+	lightYoutubeCSS += '.lyemb-player-iframe-wrap iframe{position:absolute;top:0;left:0;width:100%!important;height:100%!important;}';
 	lightYoutubeCSS += '<style>';
 	document.querySelector('head').innerHTML += lightYoutubeCSS;
 }
